@@ -6,6 +6,15 @@ Der 2 Achsen Delta Roboter wird ein Programmierprojekt sein, welches einen Delta
 
 Muss Kriterien sind solche, welche zu Projektende erfüllt werden müssen
 
+### Lösungsansatz (Joel & Armin)
+Lösungsansatz zur Realisierung des Projektes
+
+### Hardwareaufbau (Joel)
+Der Deltaroboter wird mittels 3D gedruckten Teilen aufgebaut. Die Steuerung der Achsen werden mit einem Arduino Schrittmotor angesteuert.
+
+### Flussdiagramm (Armin)
+Das Flussdiagramm beschreibt den ganzen Programmaufbau, gliedert die Programmteile und macht diese zuteilbar und übersichtlich. Die exakte Zuteilung wird spontan entschieden.
+
 ### Ansteuerung über Numpad (Joel)
 Die Positionseingabe wird über ein externes Numpad, welches am Arduino montiert ist, erfolgen.
 
