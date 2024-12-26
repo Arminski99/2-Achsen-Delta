@@ -78,30 +78,30 @@ void joystick(JOYSTICK_DATA &joystick, DESTINATION_DATA destination) {
   //Joystickbewegung links rechts
   if (joystick.joystickValueX < 170 && joystick.joystickValueX > 0) {
     destination.xValue -= 0.3f;
-  } else if (joystick.joystickValueX => 170 && joystick.joystickValueX < 341) {
+  } else if (joystick.joystickValueX >= 170 && joystick.joystickValueX < 341) {
     destination.xValue -= 0.2f;
-  } else if (joystick.joystickValueX => 341 && joystick.joystickValueX < 500) {
+  } else if (joystick.joystickValueX >= 341 && joystick.joystickValueX < 500) {
     destination.xValue -= 0.1f;
-  } else if (joystick.joystickValueX => 524 && joystick.joystickValueX < 682) {
+  } else if (joystick.joystickValueX >= 524 && joystick.joystickValueX < 682) {
     destination.xValue += 0.1f;
-  } else if (joystick.joystickValueX => 682 && joystick.joystickValueX < 852) {
+  } else if (joystick.joystickValueX >= 682 && joystick.joystickValueX < 852) {
     destination.xValue += 0.2f;
-  } else if (joystick.joystickValueX => 852 && joystick.joystickValueX < 1050) {
+  } else if (joystick.joystickValueX >= 852 && joystick.joystickValueX < 1050) {
     destination.xValue += 0.3f;
   }
 
   //Joystickbewegung auf ab
   if (joystick.joystickValueY < 170 && joystick.joystickValueY > 0) {
     destination.yValue -= 0.3f;
-  } else if (joystick.joystickValueY => 170 && joystick.joystickValueY < 341) {
+  } else if (joystick.joystickValueY >= 170 && joystick.joystickValueY < 341) {
     destination.yValue -= 0.2f;
-  } else if (joystick.joystickValueY => 341 && joystick.joystickValueY < 500) {
+  } else if (joystick.joystickValueY >= 341 && joystick.joystickValueY < 500) {
     destination.yValue -= 0.1f;
-  } else if (joystick.joystickValueY => 524 && joystick.joystickValueY < 682) {
+  } else if (joystick.joystickValueY >= 524 && joystick.joystickValueY < 682) {
     destination.yValue += 0.1f;
-  } else if (joystick.joystickValueY => 682 && joystick.joystickValueY < 852) {
+  } else if (joystick.joystickValueY >= 682 && joystick.joystickValueY < 852) {
     destination.yValue += 0.2f;
-  } else if (joystick.joystickValueY => 852 && joystick.joystickValueY < 1050) {
+  } else if (joystick.joystickValueY >= 852 && joystick.joystickValueY < 1050) {
     destination.yValue += 0.3f;
   }
 
