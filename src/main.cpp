@@ -14,10 +14,18 @@
 #define MOTOR_RIGHT_IN3 6
 #define MOTOR_RIGHT_IN4 7
 
+#define JOYSTICK_X_VALUE A0
+#define JOYSTICK_Y_VALUE A1
 
 //Definition des eigener Datentypen mittels struct
 
-//Motordaten struct beinhaltet alle benötigen Motorvariablen pro Motor (Hat 2 InOut)
+//Joystickdaten struct beinhaltet alle benoetigten Joystickvariablen (Kein InOut)
+struct JOYSTICK_DATA {
+  int joystickValueX;
+  int joystickValueY;
+};
+
+//Motordaten struct beinhaltet alle benoetigen Motorvariablen pro Motor (Hat 2 InOut)
 struct MOTOR_DATA {
   int IN1;
   int IN2;
@@ -41,7 +49,7 @@ struct DESTINATION_DATA {
   float timeDelayP4;
 };
 
-//Roboterdaten struct beinhaltet alle nicht-aenderden Vektor und Laengendaten (KeinInOut)
+//Roboterdaten struct beinhaltet alle nicht-aenderden Vektor und Laengendaten (Kein InOut)
 struct ROBOT_DATA {
   float supportVectora1Val;
   float supportVectora11Val;
@@ -58,6 +66,46 @@ MOTOR_DATA MOTOR_LEFT;
 MOTOR_DATA MOTOR_RIGHT;
 ROBOT_DATA ROBOT;
 DESTINATION_DATA DESTINATION;
+JOYSTICK_DATA JOYSTICK;
+
+//Joysticksteuerung
+void joystick(JOYSTICK_DATA &joystick, DESTINATION_DATA destination) {
+
+  //Daten einlesen
+  joystick.joystickValueX = analogRead(joystick.joystickValueX);
+  joystick.joystickValueY = analogRead(joystick.joystickValueY);
+  
+  //Joystickbewegung links rechts
+  if (joystick.joystickValueX < 170 && joystick.joystickValueX > 0) {
+    destination.xValue -= 0.3f;
+  } else if (joystick.joystickValueX => 170 && joystick.joystickValueX < 341) {
+    destination.xValue -= 0.2f;
+  } else if (joystick.joystickValueX => 341 && joystick.joystickValueX < 500) {
+    destination.xValue -= 0.1f;
+  } else if (joystick.joystickValueX => 524 && joystick.joystickValueX < 682) {
+    destination.xValue += 0.1f;
+  } else if (joystick.joystickValueX => 682 && joystick.joystickValueX < 852) {
+    destination.xValue += 0.2f;
+  } else if (joystick.joystickValueX => 852 && joystick.joystickValueX < 1050) {
+    destination.xValue += 0.3f;
+  }
+
+  //Joystickbewegung auf ab
+  if (joystick.joystickValueY < 170 && joystick.joystickValueY > 0) {
+    destination.yValue -= 0.3f;
+  } else if (joystick.joystickValueY => 170 && joystick.joystickValueY < 341) {
+    destination.yValue -= 0.2f;
+  } else if (joystick.joystickValueY => 341 && joystick.joystickValueY < 500) {
+    destination.yValue -= 0.1f;
+  } else if (joystick.joystickValueY => 524 && joystick.joystickValueY < 682) {
+    destination.yValue += 0.1f;
+  } else if (joystick.joystickValueY => 682 && joystick.joystickValueY < 852) {
+    destination.yValue += 0.2f;
+  } else if (joystick.joystickValueY => 852 && joystick.joystickValueY < 1050) {
+    destination.yValue += 0.3f;
+  }
+
+}
 
 //Konvertierungsalgorihmus von Vektor zu Motorwinkel
 void conversionAlg(float xValue, float yValue, float angles[2], struct ROBOT_DATA &robot) {
@@ -71,31 +119,31 @@ void conversionAlg(float xValue, float yValue, float angles[2], struct ROBOT_DAT
   //Berechnung der unterstuezenden Vektoren C1 und C2
   //Zielvektor berechnen, mit Pythagroassatz den Betrag des Vektors ermitteln
 
-  float temporaryC1XVal = xValue - ROBOT.supportVectora1X;
-  float temporaryC1YVal = yValue - ROBOT.supportVectora1Y;
+  float temporaryC1XVal = xValue - robot.supportVectora1X;
+  float temporaryC1YVal = yValue - robot.supportVectora1Y;
 
   float supportVectorC1 = sqrt(pow(temporaryC1XVal, 2)+pow(temporaryC1YVal, 2));
     
-  float temporaryC2XVal = xValue - ROBOT.supportVectora11X;
-  float temporaryC2YVal = yValue - ROBOT.supportVectora11Y;
+  float temporaryC2XVal = xValue - robot.supportVectora11X;
+  float temporaryC2YVal = yValue - robot.supportVectora11Y;
 
   float supportVectorC2 = sqrt(pow(temporaryC2XVal, 2)+pow(temporaryC2YVal, 2));
 
   //Berechnung von Beta 1 (rechter Motorwinkel)
   //Verwendete Formeln: Kosinussatz (Umformung nach Winkel), Radient zu Grad
 
-  float sectorBeta11 = (acosf((pow(ROBOT.directionVectora2Val, 2)+pow(supportVectorC1, 2)-pow(ROBOT.directionVectorb2Val, 2))/(2 * ROBOT.directionVectora2Val * supportVectorC1)))*180.0f/pi;
+  float sectorBeta11 = (acosf((pow(robot.directionVectora2Val, 2)+pow(supportVectorC1, 2)-pow(robot.directionVectorb2Val, 2))/(2 * robot.directionVectora2Val * supportVectorC1)))*180.0f/pi;
 
-  float sectorBeta12 = (acosf((pow(ROBOT.supportVectora1Val, 2)+pow(supportVectorC1, 2)-pow(destinationVectorVal, 2))/(2 * ROBOT.supportVectora1Val * supportVectorC1)))*180.0f/pi;
+  float sectorBeta12 = (acosf((pow(robot.supportVectora1Val, 2)+pow(supportVectorC1, 2)-pow(destinationVectorVal, 2))/(2 * robot.supportVectora1Val * supportVectorC1)))*180.0f/pi;
 
   float beta1 = sectorBeta11 + sectorBeta12;
 
   //Berechnung von Beta 2 (linker Motorwinkel)
   //Verwendete Formeln: Kosinussatz (Umformung nach Winkel), Radient zu Grad
 
-  float sectorBeta21 = (acosf((pow(ROBOT.directionVectora2Val, 2)+pow(supportVectorC2, 2)-pow(ROBOT.directionVectorb2Val, 2))/(2 * ROBOT.directionVectora2Val * supportVectorC2)))*180.0f/pi;
+  float sectorBeta21 = (acosf((pow(robot.directionVectora2Val, 2)+pow(supportVectorC2, 2)-pow(robot.directionVectorb2Val, 2))/(2 * robot.directionVectora2Val * supportVectorC2)))*180.0f/pi;
 
-  float sectorBeta22 = (acosf((pow(ROBOT.supportVectora11Val, 2)+pow(supportVectorC2, 2)-pow(destinationVectorVal, 2))/(2 * ROBOT.supportVectora11Val * supportVectorC2)))*180.0f/pi;
+  float sectorBeta22 = (acosf((pow(robot.supportVectora11Val, 2)+pow(supportVectorC2, 2)-pow(destinationVectorVal, 2))/(2 * robot.supportVectora11Val * supportVectorC2)))*180.0f/pi;
 
   float beta2 = sectorBeta21 + sectorBeta22;
 
@@ -110,7 +158,7 @@ void conversionAlg(float xValue, float yValue, float angles[2], struct ROBOT_DAT
 void oneStep(bool direction, MOTOR_DATA &motor_data) {
 
   //Einen Schritt machen
-  //stepNumber prüfen und anhand von dieser nächsten oder vorherigen Schritt tätigen
+  //stepNumber pruefen und anhand von dieser naechsten oder vorherigen Schritt taetigen
   if (direction == true) {
 
     switch(motor_data.stepNumber){
@@ -172,10 +220,10 @@ void oneStep(bool direction, MOTOR_DATA &motor_data) {
     }
   }
 
-  //Merkervariable um 1 erhöhen, damit jetziger Schritt gespeichert wird
+  //Merkervariable um 1 erhoehen, damit jetziger Schritt gespeichert wird
   motor_data.stepNumber++;
 
-  //Falls die Merkervariable 4 beträgt, muss diese auf 0 gesetzt werden um mit dem "ersten" Motorschritt weiterzumachen
+  //Falls die Merkervariable 4 betraegt, muss diese auf 0 gesetzt werden um mit dem "ersten" Motorschritt weiterzumachen
   if (motor_data.stepNumber > 3) {
 
     motor_data.stepNumber = 0;
@@ -185,14 +233,14 @@ void oneStep(bool direction, MOTOR_DATA &motor_data) {
 
 //Konvertierung von Grad zu Motorschritten
 float conversion(float input, int maxInput, int maxOutput, float translation) {
-  //Simpler Dreisatz, welcher den die Übersetzung des Zahnrades inkludiert
+  //Simpler Dreisatz, welcher den die uebersetzung des Zahnrades inkludiert
   return (input / maxInput) * maxOutput * translation;
 }
 
 //Funktion den Motor linear zu verfahren
 int moveL(struct DESTINATION_DATA destination, struct MOTOR_DATA &motor_data_right, struct MOTOR_DATA &motor_data_left, struct ROBOT_DATA &robot, bool debugMode) {
 
-  //Speicherort für Winkel kreieren
+  //Speicherort fuer Winkel kreieren
   float angles[2] = {0.0, 0.0};
 
   //Debug
@@ -223,7 +271,7 @@ int moveL(struct DESTINATION_DATA destination, struct MOTOR_DATA &motor_data_rig
     return 1;
   }
 
-  //Speicherort für Winkel in Schritten kreieren
+  //Speicherort fuer Winkel in Schritten kreieren
   float anglesInSteps[2] = {0.0, 0.0};
 
   //Winkel in Schritten umrechnen
@@ -237,7 +285,7 @@ int moveL(struct DESTINATION_DATA destination, struct MOTOR_DATA &motor_data_rig
     Serial.println("Rechter Motor Schritte nach Berechnung:");
     Serial.println(anglesInSteps[1]);
   }
-  //Speicherort für wieviel der Motor drehen muss kreieren
+  //Speicherort fuer wieviel der Motor drehen muss kreieren
   float turnMotorSteps[2] = {0.0, 0.0};
 
   //Berechnen um wie viel der Motor sich drehen muss
@@ -289,7 +337,7 @@ int moveL(struct DESTINATION_DATA destination, struct MOTOR_DATA &motor_data_rig
   float maxSteps = 0.0f; //Speichert die Anzahl maximaler Schritte, welche getaetigt werden muessen
   int numberStepsLeft = 0; //Speichert die aktuelle Anzahl von Schritten, welche beim Schrittmotor links getaetigt wurden
   int numberStepsRight = 0; //Speichert die aktuelle Anzahl von Schritten, welche beim Schrittmotor recht getaetigt wurden
-  float stepsRightBigger = false; //Speichert, ob links oder recht mehr Schritte getaetigt werden muessen (Wichtig für die kubische Bezierkurve)
+  float stepsRightBigger = false; //Speichert, ob links oder recht mehr Schritte getaetigt werden muessen (Wichtig fuer die kubische Bezierkurve)
 
   //maxSteps auswerten
   if (turnMotorSteps[1] > turnMotorSteps[0]) {
@@ -300,34 +348,34 @@ int moveL(struct DESTINATION_DATA destination, struct MOTOR_DATA &motor_data_rig
   }
 
   //Schutzmechanismus
-  //Falls keine Schritte getaetigt werden müssen ist die Zielposition schon erreicht
+  //Falls keine Schritte getaetigt werden muessen ist die Zielposition schon erreicht
   if (turnMotorSteps[0] <= 0 && turnMotorSteps[1] <= 0) {
     return 0;
   }
 
-  //Zeitverzögerung fuer insgesamte Bewegungszeit berechnen
+  //Zeitverzoegerung fuer insgesamte Bewegungszeit berechnen
   float averageTimeDelay = (destination.travelTime / maxSteps) * 1000.0f;
-  //Durchschnittliche Zeitverzögerung für die Bezierkurve berechnen
+  //Durchschnittliche Zeitverzoegerung fuer die Bezierkurve berechnen
   float originalAverageDelay = (destination.timeDelayP0 + destination.timeDelayP1 + destination.timeDelayP2 + destination.timeDelayP3 + destination.timeDelayP4) / 5.0f;
-  //Skalierungsfaktor ist das Verhältnis zwischen
+  //Skalierungsfaktor ist das Verhaeltnis zwischen
   float scaleFactor = averageTimeDelay / originalAverageDelay;
 
   //Schutzmechanismus
-  //Falls der Skalierungsfaktor unter 1 liegt, kann es dazu kommen, dass die Verzögerung von Motorschritten unter 2ms liegt
+  //Falls der Skalierungsfaktor unter 1 liegt, kann es dazu kommen, dass die Verzoegerung von Motorschritten unter 2ms liegt
   if (scaleFactor < 1.0f) {
     scaleFactor = 1.0f;
   }
 
-  //Verhältnis zwischen den Schritten und der Anzahl maximalen Schritten
+  //Verhaeltnis zwischen den Schritten und der Anzahl maximalen Schritten
   float ratioToTotalLeft = turnMotorSteps[0] / maxSteps; 
   float ratioToTotalRight = turnMotorSteps[1] / maxSteps; 
 
 
   //Debug
   if (debugMode == true) {
-    Serial.println("Verhältnis Links");
+    Serial.println("Verhaeltnis Links");
     Serial.println(ratioToTotalLeft);
-    Serial.println("Verhältnis Rechts");
+    Serial.println("Verhaeltnis Rechts");
     Serial.println(ratioToTotalRight);
     Serial.println("Skalierungsfaktor");
     Serial.println(scaleFactor);
@@ -340,18 +388,18 @@ int moveL(struct DESTINATION_DATA destination, struct MOTOR_DATA &motor_data_rig
   //For-Schleife zum machen der Schritte (Limit --> Maximale Anzahl Schritte)
   for (int i = 0; i < maxSteps; i++) {
 
-    //Erstellung Faktor t für Bezier Kurve
+    //Erstellung Faktor t fuer Bezier Kurve
     float t = 0.0;
 
-    //Faktor t für die Bezier Kurve berechnen
-    //Jetzigen Schrittwert im Verhältnis zu der maximalen Anzahl Schritte skalieren zwischen 0 und 1
+    //Faktor t fuer die Bezier Kurve berechnen
+    //Jetzigen Schrittwert im Verhaeltnis zu der maximalen Anzahl Schritte skalieren zwischen 0 und 1
     if (stepsRightBigger) {
       t = numberStepsRight / (maxSteps - 1);
     } else {
       t = numberStepsLeft / (maxSteps - 1);
     }
 
-    //Mittels quadratischer Bezierkurve (4. Grad) die Zeitverzögerung berechnen
+    //Mittels quadratischer Bezierkurve (4. Grad) die Zeitverzoegerung berechnen
     float delayTime = (pow((1 - t), 4) * destination.timeDelayP0 + 4 * pow((1 - t), 3) * t * destination.timeDelayP1 + 6 * pow((1 - t), 2) * pow(t, 2) * destination.timeDelayP2 + 4 * (1 - t) * pow(t, 3) * destination.timeDelayP3 + pow(t, 4) * destination.timeDelayP4) * scaleFactor;
 
     //Debug
@@ -359,11 +407,11 @@ int moveL(struct DESTINATION_DATA destination, struct MOTOR_DATA &motor_data_rig
       Serial.println(delayTime);
     }
 
-    //Das Verhältnis zur Akkumulatorvariable addieren
+    //Das Verhaeltnis zur Akkumulatorvariable addieren
     leftAccumulator += ratioToTotalLeft;
     rightAccumulator += ratioToTotalRight;
 
-    //Sobald diese erreicht ist, einen Schritt tätigen, dabei die Variable zurücksetzen und einen Schritt tätigen
+    //Sobald diese erreicht ist, einen Schritt taetigen, dabei die Variable zuruecksetzen und einen Schritt taetigen
     if (leftAccumulator >= 1.0f){
         oneStep(turnDirectionMotorLeft, motor_data_left);
         leftAccumulator -= 1.0f;
@@ -375,7 +423,7 @@ int moveL(struct DESTINATION_DATA destination, struct MOTOR_DATA &motor_data_rig
         numberStepsRight++;
     }
 
-    //Zeitverzögerung verwenden
+    //Zeitverzoegerung verwenden
     delay((int)delayTime);
   }
   
@@ -432,6 +480,9 @@ void setup() {
   pinMode(MOTOR_RIGHT_IN3, OUTPUT);
   pinMode(MOTOR_RIGHT_IN4, OUTPUT);
 
+  pinMode(JOYSTICK_X_VALUE, INPUT);
+  pinMode(JOYSTICK_Y_VALUE, INPUT);
+
 
 
   //Robot Struct initialisieren
@@ -465,7 +516,7 @@ void setup() {
   MOTOR_RIGHT.translation = 1.6f;
 
   //Zielpunkt Struct initialisieren
-  DESTINATION.xValue = -10.0f;
+  DESTINATION.xValue = 0.0f;
   DESTINATION.yValue = 10.0f;
   DESTINATION.travelTime = 0.0f;
   DESTINATION.timeDelayP0 = 5.0f;
@@ -474,42 +525,20 @@ void setup() {
   DESTINATION.timeDelayP3 = 2.0f;
   DESTINATION.timeDelayP4 = 5.0f;
 
-  moveL(DESTINATION, MOTOR_RIGHT, MOTOR_LEFT, ROBOT, true);
+  //Joystick Struct initialisieren
+  JOYSTICK.joystickValueX = JOYSTICK_X_VALUE;
+  JOYSTICK.joystickValueY = JOYSTICK_Y_VALUE;
+
+  moveL(DESTINATION, MOTOR_RIGHT, MOTOR_LEFT, ROBOT, false);
 
 }
 
 void loop() {
 
-  DESTINATION.xValue = -10.0f;
-  DESTINATION.yValue = 17.0f;
+  joystick(JOYSTICK, DESTINATION);
+  moveL(DESTINATION, MOTOR_RIGHT, MOTOR_LEFT, ROBOT, false);
 
-  moveL(DESTINATION, MOTOR_RIGHT, MOTOR_LEFT, ROBOT, true);
-
-  DESTINATION.xValue = -10.0f;
-  DESTINATION.yValue = 10.0f;
-
-  moveL(DESTINATION, MOTOR_RIGHT, MOTOR_LEFT, ROBOT, true);
-
-  DESTINATION.xValue = 10.0f;
-  DESTINATION.yValue = 10.0f;
-
-  moveL(DESTINATION, MOTOR_RIGHT, MOTOR_LEFT, ROBOT, true);
-
-  DESTINATION.xValue = 10.0f;
-  DESTINATION.yValue = 17.0f;
-
-  moveL(DESTINATION, MOTOR_RIGHT, MOTOR_LEFT, ROBOT, true);
-
-  DESTINATION.xValue = 10.0f;
-  DESTINATION.yValue = 10.0f;
-
-  moveL(DESTINATION, MOTOR_RIGHT, MOTOR_LEFT, ROBOT, true);
-
-  DESTINATION.xValue = -10.0f;
-  DESTINATION.yValue = 10.0f;
-
-  moveL(DESTINATION, MOTOR_RIGHT, MOTOR_LEFT, ROBOT, true);
-
+  delay(100);
 
 
 }
