@@ -1,10 +1,10 @@
 # 2-Achsen-Delta
 
-Der 2 Achsen Delta Roboter wird ein Programmierprojekt sein, welches einen Deltaroboter per Koordinatensystem von seinem jetzigen Punkt zu einem beliebigen Punkt X bewegt. Dieser Punkt wird mit einer X und einer Y Koordinate definiert.
+Der 2-Achsen-Deltaroboter wird ein Programmierprojekt sein, welches einen Deltaroboter per Koordinatensystem von seinem jetzigen Punkt zu einem beliebigen Punkt bewegt. Dieser Punkt wird mit einer X und einer Y Koordinate definiert.
 
 ## Muss Kriterien
 
-Muss Kriterien sind solche, welche zu Projektende erfüllt werden müssen
+Muss Kriterien sind solche, welche zu Projektende erfüllt werden müssen.
 
 ### Lösungsansatz (Joel & Armin)
 Lösungsansatz zur Realisierung des Projektes
@@ -23,7 +23,7 @@ Der Deltaroboter soll von seiner jetzigen Position zu einer beliebigen Position 
 
 ## Wunsch Kriterien
 
-Wunsch Kriterien sind solche, welche zu Projektende nicht erfüllt werden müssen, jedoch wüsnchenswert wären.
+Wunsch Kriterien sind solche, welche zu Projektende nicht erfüllt werden müssen, jedoch wünschenswert wären.
 
 ### Linearität
 Der Deltaroboter soll linear zwischen zwei Punkten verfahren können. Dies unabhängig von Geschwindigkeit.
@@ -37,7 +37,7 @@ Der Deltaroboter muss merken, wenn eine Position sich ausserhalb seines Arbeitsb
 ## Dokumentation
 
 ### conversionAlg
-Die Funktion coversionAlg berechnet anhand von fix vorhandenen Längen und einem variablem Vektor die Winkel, welche beide Motoren haben müssen, um die Zielpositon anzufahren.
+Die Funktion `coversionAlg` berechnet anhand von fixen Längen und einem variablem Vektor die Winkel, welche beide Motoren haben müssen, um die Zielpositon anzufahren.
 
 Der Vektor (namens Zielvektor) zeigt von Ursprung aus zur Zielposition.
 
@@ -71,7 +71,7 @@ Deswegen verwenden wir die Formel $\frac{Resultat\times 180 }{\pi}$ um das Ergeb
 
 ---
 ### conversion
-Die Funktion conversion ist ein simpler Dreisatz, welcher die Übersetzung des Zahnrads beachtet.
+Die Funktion `conversion` ist ein simpler Dreisatz, welcher die Übersetzung des Zahnrads beachtet.
 
 ```cpp
 //Konvertierung von Grad zu Motorschritten
@@ -90,7 +90,7 @@ Dies wird wie folgt berechnet: $\frac{1}{Zahnrad(armseitig)/Zahnrad(motorseitig)
 
 ---
 ### oneStep
-Wenn die Funktion oneStep ausgeführt wird, tätigt der Motor einen Schritt.
+Wenn die Funktion `oneStep` ausgeführt wird, tätigt der Motor einen Schritt.
 
 Die Funktion nimmt folgende Parameter:
 
@@ -100,7 +100,7 @@ void oneStep(bool direction, struct MOTOR_DATA &motor_data)
 - `direction` &rarr; Gibt die Drehrichtung des Motors an
 - `MOTOR_DATA` &rarr; Relevante Motorparameter (1 InOut wird in dieser Funktion verwendet)
 
-Die Funktion prüft den Zustand von `stepNumber`; eine Variable, welche sich im struct `MOTOR_DATA` des jeweiligen Motors befindet. Anhand des Zustandes und der Drehrichtung wird der nächste oder vorherige Schritt getätigt.
+Die Funktion prüft den Zustand von `stepNumber`; eine Variable, welche sich im struct `MOTOR_DATA` des jeweiligen Motors befindet. Anhand des Zustandes und der Drehrichtung wird der Nächste oder Vorherige Schritt getätigt.
 
 Wenn `IN2` aktiv ist, wird anhand der Drehrichtung entweder `IN1` oder `IN3` aktiviert und der Rest deaktiviert.
 
@@ -110,15 +110,15 @@ Die Funktion wird konkret nach diesem Flussdiagramm abarbeitet:
 
 **Hinweis**
 
-Sobald die Schrittnummer den Wert 4 erreicht, muss dieser auf 0 zurückgesetzt werden, da es keinen `IN5` gibt. Der Schritt nach `IN4` wäre `IN0`.
+Sobald die Schrittnummer den Wert 4 erreicht hat, muss dieser auf 0 zurückgesetzt werden, da es keinen `IN5` gibt. Der Schritt nach `IN4` wäre `IN0`.
 
 >Das gleiche giltet für die andere Drehrichtung. Das heisst wenn `IN0` erreicht wird, ist der nächste Schritt `IN4`.
 
 ---
-### Zeitverzögerung mit Bezier Kurve
-In unseren optionalen Kriteriten haben wir definiert, dass unser Roboter Be- und Entschleunigt. 
+### Zeitverzögerung mit Bezierkurve
+In unseren optionalen Kriteriten haben wir definiert, dass unser Roboter be- und entschleunigt. 
 
-Um dem gerecht zu werden haben wir mittels der Bezierkurve eine parametrierbare Zeitverzögerungskurve erstellt.
+Um dem gerecht zu werden, haben wir mittels der Bezierkurve eine parametrierbare Zeitverzögerungskurve erstellt.
 
 Die Bezierkurve erlaubt einen gleichmässigen Übergang von einem Punkt zu einem anderen Punkt. 
 
@@ -198,7 +198,7 @@ float scaleFactor = averageTimeDelay / originalAverageDelay;
 
 #### **Schutzmechanismus:**
 
-Falls der Skalierungsfaktor kleiner als 1 ist, kann es dazu kommen, dass die Zeitverzögerung unter 2ms liegen kann.
+Falls der Skalierungsfaktor kleiner als 1 ist, kann es dazu kommen, dass die Zeitverzögerung unter 2ms liegt.
 
 >Die Zeitverzögerung muss mindestens 2ms zwischen jedem Schritt betragen, sodass der Motor richtig funktionieren kann. Dies liegt in der Natur des Motors.
 
@@ -213,7 +213,7 @@ if (scaleFactor < 1.0f) {
 
 ---
 ### moveL
-Die Funktion moveL steuert beide Motoren an, um von der jetzigen Position linear zur Zielposition zu fahren.
+Die Funktion `moveL` steuert beide Motoren an, um von der jetzigen Position linear zur Zielposition zu fahren.
 
 **moveL verwendet folgende Funktionen & Methoden:**
 
@@ -254,7 +254,7 @@ float angles[2];
 #### Schutzmechanismus:
 Falls die Zielpostition rein geometrisch nicht erreichbar ist, geht die Berechnung in der Funktion `conversionAlg` nicht auf. Daraus resultiert, dass der Wert bzw. Datentyp `NaN` (Not a Number) zurückgegeben wird.
 
->Eine Variable mit dem Wert `NaN` ist ungleich sich selber. Das liegt daran, dass der Typ `Nan` nicht vergleichbar ist.
+>Eine Variable mit dem Wert `NaN` ist ungleich sich selber. Das liegt daran, dass der Typ `NaN` nicht vergleichbar ist.
 
 Aufgrund von dem kann mit folgender Funktion vor diesem Fall geschüzt werden:
 
@@ -281,7 +281,7 @@ float anglesInSteps[2];
 
 #### **Drehung berechnen:**
 
-Nun kann berechnet werden, um wie viel der jeweilige Motor drehen muss:
+Nun kann berechnet werden, um wieviel der jeweilige Motor drehen muss:
 
 $AnzahlDrehungen = AktuelleMotorposition - AbsoluteZielposition$
 
@@ -323,7 +323,7 @@ if (turnMotorSteps[0] < 0) {
 Prüfen ob überhaupt Schritte getätigt werden müssen
 
 ```cpp
-//Falls keine Schritte getaetigt werden müssen ist die Zielposition schon erreicht
+//Falls keine Schritte getaetigt werden muessen ist die Zielposition schon erreicht
 if (turnMotorSteps[0] <= 0 && turnMotorSteps[1] <= 0) {
     return 0;
 }
