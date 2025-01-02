@@ -328,3 +328,9 @@ if (turnMotorSteps[0] <= 0 && turnMotorSteps[1] <= 0) {
     return 0;
 }
 ```
+
+#### **Drehverhältnisse berechnen:**
+
+Um den Motor linear zu verfahren muss man zuerst folgendes Prinzip, welches ich mittels eines **Beispieles** erklären werde, verstehen:
+
+Wenn der linke Motor 100 Umdrehungen und der rechte 10 tätigen muss, muss der linke 1 Umdrehungen
