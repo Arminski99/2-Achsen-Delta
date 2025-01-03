@@ -529,3 +529,107 @@ Falls das Programm bis hier überlebt hat, kann die Aktion erfolgreich beendet w
 //Aktion erfolgreich
 return 0;
 ```
+## **Keypad**
+
+Für das Keypad wurde die Bibliothek  <Keypad.h> verwendet. 
+
+Oben im Code muss dafür einiges Deklariert werden.
+
+- Anzahl Zeilen & Spalten
+- Die Matrix mit den Zeichen
+- Die Pins an dem Arduino
+
+In diesem Fall ein 4x4 Keypad mit folgender Belegung:
+
+```cpp
+const byte ROWS = 4;
+const byte COLS = 4;
+
+char hexaKeys[ROWS][COLS] = {
+  {'1', '2', '3', 'A'},
+  {'4', '5', '6', 'B'},
+  {'7', '8', '9', 'C'},
+  {'*', '0', '#', 'D'}
+};
+
+byte rowPins[ROWS] = {37, 36, 35, 34};
+byte colPins[COLS] = {33, 32, 31, 30};
+
+Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
+```
+### **Positionierung**
+
+Die Variable "GettingX" oder "GettingY" wird true, wenn mann mit dem Keypad A oder B 
+
+(A für X) (B für Y)
+
+auswählt. 
+```cpp
+// A und B für X und Y setzen
+  if (customKey == 'A') {
+    GettingX = true;
+    GettingY = false;
+    u = 0;
+    Serial.println("Getting X Coordinates...");
+  } else if (customKey == 'B') {
+    GettingX = false;
+    GettingY = true;
+    u = 0;
+    Serial.println("Getting Y Coordinates...");
+  }
+```
+
+Wird ZB. X ausgewählt, so ist die While Schlaufe so lange aktiv, bis eine Eingabe getätigt wird. 
+Dieser Vorgang wird widerholt, da die Eingabe 2 stellig sein muss. 
+
+>Für die Position 5 muss 05 eingegeben werden.
+
+Die 2 Zahlen werden in das Array (BothX) geschriben. Die Zehner mit dem Index [0] und die Einer mit dem Index [1]
+
+```cpp
+if (GettingX) {
+    for (u = 0; u < 2; u++) {
+      char key = NO_KEY;
+      while (key == NO_KEY) {
+        key = customKeypad.getKey();
+      }
+
+      if (key) {
+        BothX[u] = key;
+      }
+    }
+```
+> "NO_KEY" ist Aktiv, wenn nichts gedrückt wird
+
+```cpp
+ PosArray[0] = (BothX[0] - '0') * 10 + (BothX[1] - '0')-10;
+```
+Hier werden die Zahlen zu einer Zahl zusammen gerechnet
+
+- [0] der Zehner, wird mit 10 Multipliziert
+- [1] der Einer, wird dazu addiert
+- Die "-10" verschiebt den Nullpunkt nach links, da die Eingabe mit Positiven Werten erfolgen soll.
+
+Der Wert wird dann auf die Positionsvariable "PosArray" geschriben. X mit dem Index [0] und Y mit dem Index [1]
+
+Die Zahlen im Array werden dann noch in die MoveL Funktion eingefügt.
+>Mit der Taste "#" wird die eingegebene Position angefahren.
+
+```cpp
+if (customKey == '#') {
+
+      DESTINATION.xValue = PosArray[0];
+      DESTINATION.yValue = PosArray[1];
+      moveL(DESTINATION, MOTOR_RIGHT, MOTOR_LEFT, ROBOT, true);
+
+  }
+```
+
+
+## **Arduino Mega**
+
+Im verlauf des Projekts mussten wir feststellen, dass die Digitalen Pins am Arduino nicht ausreichen.
+
+Deshalb haben wir auf einen Arduino Mega gewechselt.
+Dieser hat über 50 Digitale Pins.
+> Wir benötigen 16stk. 8 für die 2 Motoren und 8 für das Keypad
