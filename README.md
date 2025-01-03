@@ -1,6 +1,6 @@
 # 2-Achsen-Delta
 
-![Delta_Roboter_Bild](./Pictures/thumbnail_IMG_7845.jpg)
+![Delta_Roboter_Bild](./pictures/thumbnail_IMG_7845.jpg)
 Der 2-Achsen-Deltaroboter wird ein Programmierprojekt sein, welches einen Deltaroboter per Koordinatensystem von seinem
 jetzigen Punkt zu einem beliebigen Punkt bewegt. Dieser Punkt wird mit einer X und einer Y Koordinate definiert.
 
