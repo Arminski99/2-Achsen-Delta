@@ -380,12 +380,12 @@ int moveL(struct DESTINATION_DATA destination, struct MOTOR_DATA &motor_data_rig
   }
   
   //Rest nachkorrigieren
-  if (rightAccumulator > 0.0f) {
+  if (rightAccumulator > 0.5f) {
     oneStep(turnDirectionMotorLeft, motor_data_left);
     numberStepsLeft++;
   }
 
-  if (leftAccumulator > 0.0f) {
+  if (leftAccumulator > 0.5f) {
     oneStep(turnDirectionMotorRight, motor_data_right);
     numberStepsRight++;
   }

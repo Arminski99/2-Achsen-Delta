@@ -333,4 +333,127 @@ if (turnMotorSteps[0] <= 0 && turnMotorSteps[1] <= 0) {
 
 Um den Motor linear zu verfahren muss man zuerst folgendes Prinzip, welches ich mittels eines **Beispieles** erklären werde, verstehen:
 
-Wenn der linke Motor 100 Umdrehungen und der rechte 10 tätigen muss, muss der linke 1 Umdrehungen
+Wenn der linke Motor 100 Umdrehungen und der rechte 10 tätigen muss, so muss der rechte 1 Umdrehung für alle 10 Umdrehungen des rechten tätigen.
+
+>Das Gleiche ist anwendbar, wenn der rechte Motor mehr und der linke weniger tätigen muss.
+
+**Wie dieses Prinzip in unserem Programm umgesetzt wird:**
+
+Zuerst prüfen wir, ob der linke oder rechte Motor mehr Schritte tätigen muss und speichern diesen Wert als `maxSteps` ab:
+
+```cpp
+//maxSteps auswerten
+if (turnMotorSteps[1] > turnMotorSteps[0]) {
+    maxSteps = turnMotorSteps[1];
+    stepsRightBigger = true;
+} else {
+    maxSteps = turnMotorSteps[0];
+}
+```
+>Hier wird hier die Variable `stepsRightBigger` beschrieben. Diese ist nur relevant für die Bezierkurve, jedoch wird dies getätigt, da es Effizienter ist. Ansonsten müsste in der `FOR-Schlaufe` jedes mal eine Abfrage getätigt werden.
+
+Danach kann das Prinzip angewendet werden:
+
+Wir bilden hier das Verhältnis zwischen den Anzahl Schritten für rechts und links und den maximal zu tätigenden Schritten.
+
+$VerhältnisZuTotalLinks = \frac{SchritteLinks}{MaximaleAnzahlSchritte}$
+
+$VerhältnisZuTotalRechts = \frac{SchritteRechts}{MaximaleAnzahlSchritte}$
+
+Umsetzung in der Quelldatei:
+
+```cpp
+//Verhältnis zwischen den Schritten und der Anzahl maximalen Schritten
+float ratioToTotalLeft = turnMotorSteps[0] / maxSteps; 
+float ratioToTotalRight = turnMotorSteps[1] / maxSteps;
+```
+
+>`turnMotorSteps[0]` referenziert zum linken Motor, `turnMotorSteps[1]` referenziert zum rechten Motor.
+
+Wir verwenden nun zwei **Akkumulatorvariablen**. Mit diesen wird das am Anfang besprochene Prinzip umgesetzt wie folgt umgesetzt:
+
+1. Beide **Akkumolatorvarablen** werden auf `0.0f` gesetzt.
+2. Das Verhältnis wird bei jedem Durchlauf der `FOR-Schlaufe` addiert.
+3. Sobald die **Akkumulatorvariable** den Wert `1.0f` erreicht, wird ein Schritt des jeweiligen Motors getätigt, und der Wert der Variable wird um `1.0f` dekrementiert.
+
+Die Umsetzung in der Quelldatei wird wie folgt bewerkstelligt:
+```cpp
+//For-Schleife zum machen der Schritte (Limit --> Maximale Anzahl Schritte)
+for (int i = 0; i < maxSteps; i++) {
+
+    //Das Verhältnis zur Akkumulatorvariable addieren
+    leftAccumulator += ratioToTotalLeft;
+    rightAccumulator += ratioToTotalRight;
+
+    //Sobald diese erreicht ist, einen Schritt tätigen, dabei die Variable zurücksetzen und einen Schritt tätigen
+    if (leftAccumulator >= 1.0f){
+        oneStep(turnDirectionMotorLeft, motor_data_left);
+        leftAccumulator -= 1.0f;
+        numberStepsLeft++;
+    }
+    if (rightAccumulator >= 1.0f){
+        oneStep(turnDirectionMotorRight, motor_data_right);
+        rightAccumulator -= 1.0f;
+        numberStepsRight++;
+    }
+
+    //Zeitverzögerung verwenden
+    delay((int)delayTime);
+}
+```
+> Am Ende wird hier dann noch die Zeitverzögerung angewandt.
+
+>**Wichtig:** In den `IF-Schlaufen` wird bewusst um den Wert `1.0f` dekrementiert und nicht die **Akkumulatorvariable** auf `0.0f` gesetzt. Dies wird getätigt, da eventuell das Verhältnis nicht durch `1.0f` teilbar ist und somit ein Rest entstehen kann.
+
+> `numberStepsLeft` und `numberStepsRight` wird später verwendet, um die aktuelle Position anzupassen.
+
+#### **Auf Rest prüfen:**
+
+Nach der `FOR-Schlaufe` kann (wie oben schon beschrieben) sein, dass eventuell ein Rest in der **Akkumulatorvariable** vorhanden sein kann. Um dies zu berücksichtigen, wird noch ein Schritt getätigt, falls die **Akkumulatorvariable** einen Wert grösser als `0.5f` hat.
+
+```cpp
+//Rest nachkorrigieren
+if (rightAccumulator > 0.5f) {
+    oneStep(turnDirectionMotorLeft, motor_data_left);
+    numberStepsLeft++;
+}
+
+if (leftAccumulator > 0.5f) {
+    oneStep(turnDirectionMotorRight, motor_data_right);
+    numberStepsRight++;
+}
+```
+
+> Der Wert zum Nachkorrigieren (Hier `0.5f`), kann angepasst werden, um eventuell bessere Resultate zu erhalten.
+
+#### **Position anpassen:**
+
+Am Ende der `moveL` Funktion muss die **aktuelle Position** noch angepasst werden. Für dies verwenden wir die Variable `numberStepsRight`, welche beim Tätigen eines Schrittes um 1 inkrementiert wurde.
+
+Die Umsetung in der Quelldatei wird wie folgt bewerkstelligt:
+
+```cpp
+//Position anpassen
+if (turnDirectionMotorLeft == true) {
+    motor_data_left.currentPosition += numberStepsLeft;
+} else {
+    motor_data_left.currentPosition -= numberStepsLeft;
+}
+
+if (turnDirectionMotorRight == true) {
+    motor_data_right.currentPosition -= numberStepsRight;
+} else {
+    motor_data_right.currentPosition += numberStepsRight;
+}
+```
+Falls der links Motor um Uhrzeigersinn gedreht wird, so müssen die neuen Schritte zur Position addiert werden, ansonsten müssen sie subtrahiert werden.
+
+> **Wichtig:** Die Positionsanpassung ist für den rechten Arm **spiegelverkehrt**, da dieser an der Y-Achse gespiegelt ist.
+
+> **Ebenfalls Wichtig:** Wenn der Motor sich im Uhrzeigersinn dreht, bewegt sich der Roboterarm aufgrund unseres Zahnradsystems im Gegenuhrzeigersinn. Grunddessen müssen **Additionen** und **Subtraktionen** vertauscht werden.
+
+Falls das Programm bis hier überlebt hat, kann die Aktion erfolgreich beendet werden:
+```cpp
+//Aktion erfolgreich
+return 0;
+```
