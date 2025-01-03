@@ -2,6 +2,10 @@
 #include <Arduino.h>
 #include <math.h>
 #include <stdio.h>
+#include <Keypad.h>
+
+
+
 
 //PIN Deklarationen
 #define MOTOR_LEFT_IN1 9
@@ -14,6 +18,38 @@
 #define MOTOR_RIGHT_IN3 6
 #define MOTOR_RIGHT_IN4 7
 
+
+//Variabeln für die Positionierung
+
+char BothX[2];
+char BothY[2];
+int PosArray[2]; // Array to hold X and Y positions
+bool GettingX = false;
+bool GettingY = false;
+int u = 0;
+
+
+int posbit;
+
+
+
+
+
+//Keypad  Deklaration
+const byte ROWS = 4;
+const byte COLS = 4;
+
+char hexaKeys[ROWS][COLS] = {
+  {'1', '2', '3', 'A'},
+  {'4', '5', '6', 'B'},
+  {'7', '8', '9', 'C'},
+  {'*', '0', '#', 'D'}
+};
+
+byte rowPins[ROWS] = {37, 36, 35, 34};
+byte colPins[COLS] = {33, 32, 31, 30};
+
+Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
 
 //Definition des eigener Datentypen mittels struct
 
@@ -75,7 +111,7 @@ void conversionAlg(float xValue, float yValue, float angles[2], struct ROBOT_DAT
   float temporaryC1YVal = yValue - ROBOT.supportVectora1Y;
 
   float supportVectorC1 = sqrt(pow(temporaryC1XVal, 2)+pow(temporaryC1YVal, 2));
-    
+
   float temporaryC2XVal = xValue - ROBOT.supportVectora11X;
   float temporaryC2YVal = yValue - ROBOT.supportVectora11Y;
 
@@ -138,10 +174,10 @@ void oneStep(bool direction, MOTOR_DATA &motor_data) {
       digitalWrite(motor_data.IN3, LOW);
       digitalWrite(motor_data.IN4, HIGH);
       break;
-    } 
+    }
 
   }
-  
+
   if (direction == false) {
 
     switch(motor_data.stepNumber){
@@ -249,7 +285,7 @@ int moveL(struct DESTINATION_DATA destination, struct MOTOR_DATA &motor_data_rig
     Serial.println("Wieviel drehen links vor aufbereitung:");
     Serial.println(turnMotorSteps[0]);
     Serial.println("Wieviel drehen rechts vor aufbereitung:");
-    Serial.println(turnMotorSteps[1]);  
+    Serial.println(turnMotorSteps[1]);
   }
 
   //Drehrichtungparameter erstellen
@@ -279,7 +315,7 @@ int moveL(struct DESTINATION_DATA destination, struct MOTOR_DATA &motor_data_rig
     Serial.println("Richtung:");
     Serial.println(turnDirectionMotorLeft);
     Serial.println("Wieviel drehen rechts nach aufbereitung:");
-    Serial.println(turnMotorSteps[1]);  
+    Serial.println(turnMotorSteps[1]);
     Serial.println("Richtung:");
     Serial.println(turnDirectionMotorRight);
   }
@@ -319,8 +355,8 @@ int moveL(struct DESTINATION_DATA destination, struct MOTOR_DATA &motor_data_rig
   }
 
   //Verhältnis zwischen den Schritten und der Anzahl maximalen Schritten
-  float ratioToTotalLeft = turnMotorSteps[0] / maxSteps; 
-  float ratioToTotalRight = turnMotorSteps[1] / maxSteps; 
+  float ratioToTotalLeft = turnMotorSteps[0] / maxSteps;
+  float ratioToTotalRight = turnMotorSteps[1] / maxSteps;
 
 
   //Debug
@@ -378,7 +414,7 @@ int moveL(struct DESTINATION_DATA destination, struct MOTOR_DATA &motor_data_rig
     //Zeitverzögerung verwenden
     delay((int)delayTime);
   }
-  
+
   //Rest nachkorrigieren
   if (rightAccumulator > 0.5f) {
     oneStep(turnDirectionMotorLeft, motor_data_left);
@@ -474,42 +510,87 @@ void setup() {
   DESTINATION.timeDelayP3 = 2.0f;
   DESTINATION.timeDelayP4 = 5.0f;
 
-  moveL(DESTINATION, MOTOR_RIGHT, MOTOR_LEFT, ROBOT, true);
+ // moveL(DESTINATION, MOTOR_RIGHT, MOTOR_LEFT, ROBOT, true);
 
 }
+
 
 void loop() {
+  char customKey = customKeypad.getKey();
 
-  DESTINATION.xValue = -10.0f;
-  DESTINATION.yValue = 17.0f;
+  // A und B für X und Y setzen
+  if (customKey == 'A') {
+    GettingX = true;
+    GettingY = false;
+    u = 0;
+    Serial.println("Getting X Coordinates...");
+  } else if (customKey == 'B') {
+    GettingX = false;
+    GettingY = true;
+    u = 0;
+    Serial.println("Getting Y Coordinates...");
+  }
 
-  moveL(DESTINATION, MOTOR_RIGHT, MOTOR_LEFT, ROBOT, true);
+  // X Koordinaten abfragen
+  if (GettingX) {
+    for (u = 0; u < 2; u++) {
+      char key = NO_KEY;
+      while (key == NO_KEY) {
+        key = customKeypad.getKey();
+      }
 
-  DESTINATION.xValue = -10.0f;
-  DESTINATION.yValue = 10.0f;
+      if (key) {
+        BothX[u] = key;
+      }
+    }
 
-  moveL(DESTINATION, MOTOR_RIGHT, MOTOR_LEFT, ROBOT, true);
+    // konvertierung zu Float
+    PosArray[0] = (BothX[0] - '0') * 10 + (BothX[1] - '0')-10;
 
-  DESTINATION.xValue = 10.0f;
-  DESTINATION.yValue = 10.0f;
+    // Resultat in Konsole für debugging
+    Serial.print("X Coordinate: ");
+    Serial.println(PosArray[0]+10);
 
-  moveL(DESTINATION, MOTOR_RIGHT, MOTOR_LEFT, ROBOT, true);
+    // Weitere X Korrdinaten blockieren
+    GettingX = false;
+  }
 
-  DESTINATION.xValue = 10.0f;
-  DESTINATION.yValue = 17.0f;
+  // Y Koordinaten abfragen
+  if (GettingY) {
+    for (u = 0; u < 2; u++) {
+      char key = NO_KEY;
+      while (key == NO_KEY) {
+        key = customKeypad.getKey();
+      }
 
-  moveL(DESTINATION, MOTOR_RIGHT, MOTOR_LEFT, ROBOT, true);
+      if (key) {
+        BothY[u] = key;
+      }
+    }
 
-  DESTINATION.xValue = 10.0f;
-  DESTINATION.yValue = 10.0f;
+    // konvertierung zu Float
+    PosArray[1] = (BothY[0] - '0') * 10 + (BothY[1] - '0')+8;
 
-  moveL(DESTINATION, MOTOR_RIGHT, MOTOR_LEFT, ROBOT, true);
+    // Resultat in Konsole für debugging
+    Serial.print("Y Coordinate: ");
+    Serial.println(PosArray[1]-8);
 
-  DESTINATION.xValue = -10.0f;
-  DESTINATION.yValue = 10.0f;
+    // Weitere Y Korrdinaten blockieren
+    GettingY = false;
+  }
 
-  moveL(DESTINATION, MOTOR_RIGHT, MOTOR_LEFT, ROBOT, true);
+  if (customKey == '#') {
 
+      DESTINATION.xValue = PosArray[0];
+      DESTINATION.yValue = PosArray[1];
+      moveL(DESTINATION, MOTOR_RIGHT, MOTOR_LEFT, ROBOT, true);
 
+  }
 
 }
+
+
+
+
+
+
