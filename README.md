@@ -139,6 +139,7 @@ Dieser Parameter gibt den Kehrwert des Verhältnisses der Zahnräder an.
 
 Dies wird wie folgt berechnet: $\frac{1}{Zahnrad(armseitig)/Zahnrad(motorseitig)}$
 
+> [!IMPORTANT]
 > Dieser Faktor muss mit dem Ergebnis multipliziert werden, um die richtige Anzahl von Schritten zu erhalten.
 
 <sub> **Von Armin** </sub>
@@ -172,6 +173,7 @@ Die Funktion wird konkret nach diesem Flussdiagramm abarbeitet:
 Sobald die Schrittnummer den Wert 4 erreicht hat, muss dieser auf 0 zurückgesetzt werden, da es keinen `IN5` gibt. Der
 Schritt nach `IN4` wäre `IN0`.
 
+> [!NOTE]
 > Das gleiche giltet für die andere Drehrichtung. Das heisst wenn `IN0` erreicht wird, ist der nächste Schritt `IN4`.
 
 <sub> **Von Armin** </sub>
@@ -240,6 +242,7 @@ Zuerst muss die durchschnittliche Zeitverzögerung für die gesamte Bewegungszei
 
 $DurchschnittlicheZeitverzögerung = \frac{Bewegungszeit}{MaximaleAnzahlSchritte}$
 
+> [!IMPORTANT]
 > Im Quellcode wird hier noch mit 1000 multipliziert. Dies wird gemacht um von Sekunden auf Millisekunden umzurechnen
 
 Zudem auch die durchschnittliche Zeitverzögerung der Bezierpunkte:
@@ -299,6 +302,7 @@ moveL verwendet folgende Funktionen & Methoden:
 - oneStep
 - Zeitverzögerung mit Bezier Kurve
 
+> [!IMPORTANT]
 > Bitte diese Kapitel zuerst lesen!
 
 Die Funktion nimmt folgende Parameter:
@@ -313,6 +317,7 @@ int moveL(struct DESTINATION_DATA destination, struct MOTOR_DATA &motor_data_rig
 - `bool debugMode` &rarr; Wenn dieser Parameter auf `TRUE` gesetz wird, werden alle berechneten Werte im Serial Monitor
   ausgegeben
 
+> [!NOTE]
 > Die Motordatenstructs beinhalten jeweils 2 InOuts: `stepNumber` und `currentPosition`. Auf beide Variablen wird
 > jeweils zurückgeschrieben.
 
@@ -330,6 +335,7 @@ Die Winkel werden in folgendem Array abgespeichert:
 float angles[2];
 ```
 
+> [!NOTE]
 > Das erste Element im Array referenziert auf den linken Motor. Das zweite Element auf den rechten.
 
 #### Schutzmechanismus:
@@ -337,6 +343,7 @@ float angles[2];
 Falls die Zielpostition rein geometrisch nicht erreichbar ist, geht die Berechnung in der Funktion `conversionAlg` nicht
 auf. Daraus resultiert, dass der Wert bzw. Datentyp `NaN` (Not a Number) zurückgegeben wird.
 
+> [!NOTE]
 > Eine Variable mit dem Wert `NaN` ist ungleich sich selber. Das liegt daran, dass der Typ `NaN` nicht vergleichbar ist.
 
 Aufgrund von dem kann mit folgender Funktion vor diesem Fall geschüzt werden:
@@ -370,6 +377,7 @@ Nun kann berechnet werden, um wieviel der jeweilige Motor drehen muss:
 
 $AnzahlDrehungen = AktuelleMotorposition - AbsoluteZielposition$
 
+> [!NOTE]
 > Die aktuelle Motorposition wird im `struct motor_data_right & motor_data_left` gespeichert.
 
 #### **Aufbereitung der Drehdaten:**
@@ -402,10 +410,12 @@ if (turnMotorSteps[0] < 0) {
 }
 ```
 
-> **Wichtig:** Wenn der Motor sich im Uhrzeigersinn dreht, bewegt sich der Roboterarm aufgrund unseres Zahnradsystems im
+> [!IMPORTANT]
+> Wenn der Motor sich im Uhrzeigersinn dreht, bewegt sich der Roboterarm aufgrund unseres Zahnradsystems im
 > Gegenuhrzeigersinn.
 
-> **Ebenfalls Wichtig:** Die Datenaufbereitung ist für den rechten Arm **spiegelverkehrt**, da dieser an der Y-Achse
+> [!IMPORTANT]
+> Die Datenaufbereitung ist für den rechten Arm **spiegelverkehrt**, da dieser an der Y-Achse
 > gespiegelt ist.
 
 #### Schutzmechanismus
@@ -427,6 +437,7 @@ werde, verstehen:
 Wenn der linke Motor 100 Umdrehungen und der rechte 10 tätigen muss, so muss der rechte 1 Umdrehung für alle 10
 Umdrehungen des rechten tätigen.
 
+> [!NOTE]
 > Das Gleiche ist anwendbar, wenn der rechte Motor mehr und der linke weniger tätigen muss.
 
 **Wie dieses Prinzip in unserem Programm umgesetzt wird:**
@@ -444,6 +455,7 @@ if (turnMotorSteps[1] > turnMotorSteps[0]) {
 }
 ```
 
+> [!NOTE]
 > Hier wird hier die Variable `stepsRightBigger` beschrieben. Diese ist nur relevant für die Bezierkurve, jedoch wird
 > dies getätigt, da es Effizienter ist. Ansonsten müsste in der `FOR-Schlaufe` jedes mal eine Abfrage getätigt werden.
 
@@ -464,6 +476,7 @@ float ratioToTotalLeft = turnMotorSteps[0] / maxSteps;
 float ratioToTotalRight = turnMotorSteps[1] / maxSteps;
 ```
 
+> [!NOTE]
 > `turnMotorSteps[0]` referenziert zum linken Motor, `turnMotorSteps[1]` referenziert zum rechten Motor.
 
 Wir verwenden nun zwei **Akkumulatorvariablen**. Mit diesen wird das am Anfang besprochene Prinzip umgesetzt wie folgt
@@ -503,10 +516,12 @@ for (int i = 0; i < maxSteps; i++) {
 
 > Am Ende wird hier dann noch die Zeitverzögerung angewandt.
 
+> [!IMPORTANT]
 > **Wichtig:** In den `IF-Schlaufen` wird bewusst um den Wert `1.0f` dekrementiert und nicht die **Akkumulatorvariable**
 > auf `0.0f` gesetzt. Dies wird getätigt, da eventuell das Verhältnis nicht durch `1.0f` teilbar ist und somit ein Rest
 > entstehen kann.
 
+> [!NOTE]
 > `numberStepsLeft` und `numberStepsRight` wird später verwendet, um die aktuelle Position anzupassen.
 
 #### **Auf Rest prüfen:**
@@ -528,6 +543,7 @@ if (leftAccumulator > 0.5f) {
 }
 ```
 
+> [!TIP]
 > Der Wert zum Nachkorrigieren (Hier `0.5f`), kann angepasst werden, um eventuell bessere Resultate zu erhalten.
 
 #### **Position anpassen:**
@@ -555,10 +571,12 @@ if (turnDirectionMotorRight == true) {
 Falls der links Motor um Uhrzeigersinn gedreht wird, so müssen die neuen Schritte zur Position addiert werden, ansonsten
 müssen sie subtrahiert werden.
 
-> **Wichtig:** Die Positionsanpassung ist für den rechten Arm **spiegelverkehrt**, da dieser an der Y-Achse gespiegelt
+> [!IMPORTANT]
+> Die Positionsanpassung ist für den rechten Arm **spiegelverkehrt**, da dieser an der Y-Achse gespiegelt
 > ist.
 
-> **Ebenfalls Wichtig:** Wenn der Motor sich im Uhrzeigersinn dreht, bewegt sich der Roboterarm aufgrund unseres
+> [!IMPORTANT]
+> Wenn der Motor sich im Uhrzeigersinn dreht, bewegt sich der Roboterarm aufgrund unseres
 > Zahnradsystems im Gegenuhrzeigersinn. Grunddessen müssen **Additionen** und **Subtraktionen** vertauscht werden.
 
 Falls das Programm bis hier überlebt hat, kann die Aktion erfolgreich beendet werden:
@@ -628,7 +646,8 @@ Wird zum Beispiel `X` ausgewählt, so ist die `WHILE-Schlaufe` so lange aktiv, b
 
 Dieser Vorgang wird widerholt, da die Eingabe 2 stellig sein muss. 
 
->Für die Position 5 muss `05` eingegeben werden.
+> [!CAUTION]
+> Für die Position 5 **muss** `05` eingegeben werden.
 
 Beide Zahlen werden in das Array `BothX[]` geschriben. Die Zehner mit dem Index `[0]` und die Einer mit dem Index `[1]`.
 
@@ -690,6 +709,7 @@ Im Verlauf des Projekts mussten wir feststellen, dass die digitalen Pins am Ardu
 
 Deshalb haben wir auf einen Arduino Mega gewechselt.
 
+[!NOTE]
 > Wir benötigen `8 DI/DO` für die 2 Motoren und `8 DI/DO` für das Keypad
 
 <sub> **Von Joel** </sub>
