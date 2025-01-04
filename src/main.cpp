@@ -510,7 +510,6 @@ void setup() {
   DESTINATION.timeDelayP3 = 2.0f;
   DESTINATION.timeDelayP4 = 5.0f;
 
- // moveL(DESTINATION, MOTOR_RIGHT, MOTOR_LEFT, ROBOT, true);
 
 }
 
