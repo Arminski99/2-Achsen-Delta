@@ -97,7 +97,7 @@ Die Funktion arbeitet nach folgendem Schema und Formeln:
 
 ![Geometrieschema](./pictures/Geometrieschema_Deltaroboter.png)
 
-Auf dem Geometrieschema wird nur eine Armseite erklärt, jedoch lässt sich das gleiche Prinzip auf die andere Seite
+> Auf dem Geometrieschema wird nur eine Armseite erklärt, jedoch lässt sich das gleiche Prinzip auf die andere Seite
 anwenden.
 
 Der Winkel Beta ist der Motorwinkel.
@@ -223,7 +223,6 @@ Der Faktor `t` ist ein **normierter Wert** zwischen 0 und 1 und bestimmt wie wei
 
 Der Faktor `t` muss zwischen 0 und der maximalen Anzahl von Schritten normiert werden.
 
-> [!NOTE]
 > Das heisst beim 0-ten Schritt muss `t = 0.0` und bei der maximalen Anzahl Schritten `t = 1.0` betragen. Dazwischen
 > muss ein gleichmässiger Verlauf stattfinden!
 
@@ -243,7 +242,6 @@ Zuerst muss die durchschnittliche Zeitverzögerung für die gesamte Bewegungszei
 
 $DurchschnittlicheZeitverzögerung = \frac{Bewegungszeit}{MaximaleAnzahlSchritte}$
 
-> [!IMPORTANT]
 > Im Quellcode wird hier noch mit 1000 multipliziert. Dies wird gemacht um von Sekunden auf Millisekunden umzurechnen
 
 Zudem auch die durchschnittliche Zeitverzögerung der Bezierpunkte:
@@ -337,7 +335,6 @@ Die Winkel werden in folgendem Array abgespeichert:
 float angles[2];
 ```
 
-> [!NOTE]
 > Das erste Element im Array referenziert auf den linken Motor. Das zweite Element auf den rechten.
 
 #### Schutzmechanismus:
@@ -345,7 +342,6 @@ float angles[2];
 Falls die Zielpostition rein geometrisch nicht erreichbar ist, geht die Berechnung in der Funktion `conversionAlg` nicht
 auf. Daraus resultiert, dass der Wert bzw. Datentyp `NaN` (Not a Number) zurückgegeben wird.
 
-> [!NOTE]
 > Eine Variable mit dem Wert `NaN` ist ungleich sich selber. Das liegt daran, dass der Typ `NaN` nicht vergleichbar ist.
 
 Aufgrund von dem kann mit folgender Funktion vor diesem Fall geschüzt werden:
@@ -439,7 +435,6 @@ werde, verstehen:
 Wenn der linke Motor 100 Umdrehungen und der rechte 10 tätigen muss, so muss der rechte 1 Umdrehung für alle 10
 Umdrehungen des rechten tätigen.
 
-> [!NOTE]
 > Das Gleiche ist anwendbar, wenn der rechte Motor mehr und der linke weniger tätigen muss.
 
 **Wie dieses Prinzip in unserem Programm umgesetzt wird:**
@@ -478,7 +473,6 @@ float ratioToTotalLeft = turnMotorSteps[0] / maxSteps;
 float ratioToTotalRight = turnMotorSteps[1] / maxSteps;
 ```
 
-> [!NOTE]
 > `turnMotorSteps[0]` referenziert zum linken Motor, `turnMotorSteps[1]` referenziert zum rechten Motor.
 
 Wir verwenden nun zwei **Akkumulatorvariablen**. Mit diesen wird das am Anfang besprochene Prinzip umgesetzt wie folgt
@@ -519,7 +513,7 @@ for (int i = 0; i < maxSteps; i++) {
 > Am Ende wird hier dann noch die Zeitverzögerung angewandt.
 
 > [!IMPORTANT]
-> **Wichtig:** In den `IF-Schlaufen` wird bewusst um den Wert `1.0f` dekrementiert und nicht die **Akkumulatorvariable**
+> In den `IF-Schlaufen` wird bewusst um den Wert `1.0f` dekrementiert und nicht die **Akkumulatorvariable**
 > auf `0.0f` gesetzt. Dies wird getätigt, da eventuell das Verhältnis nicht durch `1.0f` teilbar ist und somit ein Rest
 > entstehen kann.
 
