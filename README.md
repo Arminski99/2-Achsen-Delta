@@ -65,7 +65,7 @@ Im Voraus wird benötigt:
 
 Den Code laden:
 
-1. Das Repository klonen oder das Projekt [herunterladen](https://github.com/Arminski99/2-Achsen-Delta/archive/refs/heads/main.zip).
+1. Das Repository klonen oder [herunterladen](https://github.com/Arminski99/2-Achsen-Delta/archive/refs/heads/main.zip).
 2. Mit **Microsoft Visual Studio Code** oder einer anderen IDE öffnen
 3. Den Arduino anschliessen 
 4. Mithilfe der Statusleiste das Programm compilen und rüberladen
@@ -223,6 +223,7 @@ Der Faktor `t` ist ein **normierter Wert** zwischen 0 und 1 und bestimmt wie wei
 
 Der Faktor `t` muss zwischen 0 und der maximalen Anzahl von Schritten normiert werden.
 
+> [!NOTE]
 > Das heisst beim 0-ten Schritt muss `t = 0.0` und bei der maximalen Anzahl Schritten `t = 1.0` betragen. Dazwischen
 > muss ein gleichmässiger Verlauf stattfinden!
 
@@ -271,6 +272,7 @@ float scaleFactor = averageTimeDelay / originalAverageDelay;
 
 Falls der Skalierungsfaktor kleiner als 1 ist, kann es dazu kommen, dass die Zeitverzögerung unter 2ms liegt.
 
+> [!IMPORTANT]
 > Die Zeitverzögerung muss mindestens 2ms zwischen jedem Schritt betragen, sodass der Motor richtig funktionieren kann.
 > Dies liegt in der Natur des Motors.
 
@@ -709,7 +711,7 @@ Im Verlauf des Projekts mussten wir feststellen, dass die digitalen Pins am Ardu
 
 Deshalb haben wir auf einen Arduino Mega gewechselt.
 
-[!NOTE]
+> [!NOTE]
 > Wir benötigen `8 DI/DO` für die 2 Motoren und `8 DI/DO` für das Keypad
 
 <sub> **Von Joel** </sub>
