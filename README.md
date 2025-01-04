@@ -203,6 +203,8 @@ Umsetung in der Quelldatei:
 float delayTime = (pow((1 - t), 4) * destination.timeDelayP0 + 4 * pow((1 - t), 3) * t * destination.timeDelayP1 + 6 * pow((1 - t), 2) * pow(t, 2) * destination.timeDelayP2 + 4 * (1 - t) * pow(t, 3) * destination.timeDelayP3 + pow(t, 4) * destination.timeDelayP4) * scaleFactor;
 ```
 
+[Formelnquelle](https://de.wikipedia.org/wiki/De-Casteljau-Algorithmus)
+
 Der Faktor `t` ist ein **normierter Wert** zwischen 0 und 1 und bestimmt wie weit der Kurve entlang man sich befindet.
 
 **Ein paar Beispiele:**
