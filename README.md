@@ -173,7 +173,6 @@ Die Funktion wird konkret nach diesem Flussdiagramm abarbeitet:
 Sobald die Schrittnummer den Wert 4 erreicht hat, muss dieser auf 0 zurückgesetzt werden, da es keinen `IN5` gibt. Der
 Schritt nach `IN4` wäre `IN0`.
 
-> [!NOTE]
 > Das gleiche giltet für die andere Drehrichtung. Das heisst wenn `IN0` erreicht wird, ist der nächste Schritt `IN4`.
 
 <sub> **Von Armin** </sub>
