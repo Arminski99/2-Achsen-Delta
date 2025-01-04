@@ -50,8 +50,34 @@ Der Deltaroboter muss merken, wenn eine Position sich ausserhalb seines Arbeitsb
 
 ## Dokumentation
 
-### conversionAlg
+### Verwendung
+Hier wird erklärt wie man unseren Code auf einen Arduino laden kann.
 
+Im Voraus wird benötigt:
+
+- [ ] Eine IDE, welche `PlatformIO` unterstützt &rarr; zum Beispiel [Microsoft Visual Studio Code](https://code.visualstudio.com/download)
+- [ ] [`PlatformIO`](https://platformio.org/)
+- [ ] Einen C++ Compiler wie [GCC](https://code.visualstudio.com/docs/cpp/config-mingw)
+- [ ] [Arduino IDE](https://www.arduino.cc/en/software) &rarr; Wird benötigt für `PlatformIO`
+
+> [!NOTE]
+> Mit **Microsoft Visual Studio Code** kann `PlatformIO` über `Extenstions` heruntergeladen und installiert werden &rarr; [Hier eine Anleitung](https://platformio.org/install/ide?install=vscode)
+
+Den Code laden:
+
+1. Das Repository klonen oder das Projekt [herunterladen](https://github.com/Arminski99/2-Achsen-Delta/archive/refs/heads/main.zip).
+2. Mit **Microsoft Visual Studio Code** oder einer anderen IDE öffnen
+3. Den Arduino anschliessen 
+4. Mithilfe der Statusleiste das Programm compilen und rüberladen
+
+> [!WARNING]
+> Falls ein anderer Arduino oder eine andere Version verwendet wird, muss `plaformio.ini` angepasst werden
+
+<sub> **Von Armin** </sub>
+
+---
+### conversionAlg
+ 
 Die Funktion `coversionAlg` berechnet anhand von fixen Längen und einem variablem Vektor die Winkel, welche beide
 Motoren haben müssen, um die Zielpositon anzufahren.
 
@@ -89,6 +115,9 @@ Ergebnis im Bogenmass zurückgibt.
 
 Deswegen verwenden wir die Formel $\frac{Resultat\times 180 }{\pi}$ um das Ergebnis in Grad umwandeln.
 
+<sub> **Von Armin** </sub>
+
+
 ---
 
 ### conversion
@@ -111,6 +140,8 @@ Dieser Parameter gibt den Kehrwert des Verhältnisses der Zahnräder an.
 Dies wird wie folgt berechnet: $\frac{1}{Zahnrad(armseitig)/Zahnrad(motorseitig)}$
 
 > Dieser Faktor muss mit dem Ergebnis multipliziert werden, um die richtige Anzahl von Schritten zu erhalten.
+
+<sub> **Von Armin** </sub>
 
 ---
 
@@ -142,6 +173,8 @@ Sobald die Schrittnummer den Wert 4 erreicht hat, muss dieser auf 0 zurückgeset
 Schritt nach `IN4` wäre `IN0`.
 
 > Das gleiche giltet für die andere Drehrichtung. Das heisst wenn `IN0` erreicht wird, ist der nächste Schritt `IN4`.
+
+<sub> **Von Armin** </sub>
 
 ---
 
@@ -248,13 +281,18 @@ if (scaleFactor < 1.0f) {
 }
 ```
 
+> [!NOTE]
+> Mit der Datei [`olc_stuff.exe`](./programs/olc_stuff.exe) lässt sich eine beliebige Bezierkurve visuell darstellen. Diese wurde von [confrontal](https://github.com/confrontal) zur Verfügung gestellt.
+
+<sub> **Von Armin** </sub>
+
 ---
 
 ### moveL
 
 Die Funktion `moveL` steuert beide Motoren an, um von der jetzigen Position linear zur Zielposition zu fahren.
 
-**moveL verwendet folgende Funktionen & Methoden:**
+moveL verwendet folgende Funktionen & Methoden:
 
 - converstionAlg
 - convert
@@ -529,11 +567,14 @@ Falls das Programm bis hier überlebt hat, kann die Aktion erfolgreich beendet w
 //Aktion erfolgreich
 return 0;
 ```
-## **Keypad**
 
-Für das Keypad wurde die Bibliothek  <Keypad.h> verwendet. 
+---
 
-Oben im Code muss dafür einiges Deklariert werden.
+### **Keypad**
+
+Für das Keypad wurde die Bibliothek  `<Keypad.h>` verwendet. 
+
+Oben im Code muss dafür einiges deklariert werden.
 
 - Anzahl Zeilen & Spalten
 - Die Matrix mit den Zeichen
@@ -557,34 +598,39 @@ byte colPins[COLS] = {33, 32, 31, 30};
 
 Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
 ```
+
+<sub> **Von Joel** </sub>
+
+---
 ### **Positionierung**
 
-Die Variable "GettingX" oder "GettingY" wird true, wenn mann mit dem Keypad A oder B 
+Die Variable `GettingX` oder `GettingY` wird `TRUE`, wenn man mit dem Keypad A oder B auswählt.
 
-(A für X) (B für Y)
+- `A` &rarr; X-Koordinate
+- `B` &rarr; Y-Koordinate
 
-auswählt. 
 ```cpp
 // A und B für X und Y setzen
-  if (customKey == 'A') {
-    GettingX = true;
-    GettingY = false;
-    u = 0;
-    Serial.println("Getting X Coordinates...");
-  } else if (customKey == 'B') {
-    GettingX = false;
-    GettingY = true;
-    u = 0;
-    Serial.println("Getting Y Coordinates...");
-  }
+if (customKey == 'A') {
+  GettingX = true;
+  GettingY = false;
+  u = 0;
+  Serial.println("Getting X Coordinates...");
+} else if (customKey == 'B') {
+  GettingX = false;
+  GettingY = true;
+  u = 0;
+  Serial.println("Getting Y Coordinates...");
+}
 ```
 
-Wird ZB. X ausgewählt, so ist die While Schlaufe so lange aktiv, bis eine Eingabe getätigt wird. 
+Wird zum Beispiel `X` ausgewählt, so ist die `WHILE-Schlaufe` so lange aktiv, bis eine Eingabe getätigt wird. 
+
 Dieser Vorgang wird widerholt, da die Eingabe 2 stellig sein muss. 
 
->Für die Position 5 muss 05 eingegeben werden.
+>Für die Position 5 muss `05` eingegeben werden.
 
-Die 2 Zahlen werden in das Array (BothX) geschriben. Die Zehner mit dem Index [0] und die Einer mit dem Index [1]
+Beide Zahlen werden in das Array `BothX[]` geschriben. Die Zehner mit dem Index `[0]` und die Einer mit dem Index `[1]`.
 
 ```cpp
 if (GettingX) {
@@ -598,22 +644,24 @@ if (GettingX) {
         BothX[u] = key;
       }
     }
+}
 ```
-> "NO_KEY" ist Aktiv, wenn nichts gedrückt wird
+> `NO_KEY` ist aktiv, wenn nichts gedrückt wird.
 
 ```cpp
- PosArray[0] = (BothX[0] - '0') * 10 + (BothX[1] - '0')-10;
+ PosArray[0] = (BothX[0] - '0') * 10 + (BothX[1] - '0') -10;
 ```
 Hier werden die Zahlen zu einer Zahl zusammen gerechnet
 
-- [0] der Zehner, wird mit 10 Multipliziert
-- [1] der Einer, wird dazu addiert
-- Die "-10" verschiebt den Nullpunkt nach links, da die Eingabe mit Positiven Werten erfolgen soll.
+- `[0]` der Zehner, wird mit 10 Multipliziert
+- `[1]` der Einer, wird dazu addiert
+- Die `-10` verschiebt den Nullpunkt nach links, da die Eingabe mit Positiven Werten erfolgen soll.
 
-Der Wert wird dann auf die Positionsvariable "PosArray" geschriben. X mit dem Index [0] und Y mit dem Index [1]
+Der Wert wird dann auf die Positionsvariable `PosArray[]` geschriben. `X` mit dem Index `[0]` und `Y` mit dem Index `[1]`
 
-Die Zahlen im Array werden dann noch in die MoveL Funktion eingefügt.
->Mit der Taste "#" wird die eingegebene Position angefahren.
+Die Zahlen im Array werden dann noch in die `moveL` Funktion eingefügt.
+
+Mit der Taste `#` wird die eingegebene Position angefahren:
 
 ```cpp
 if (customKey == '#') {
@@ -625,11 +673,23 @@ if (customKey == '#') {
   }
 ```
 
+<sub> **Von Joel** </sub>
 
-## **Arduino Mega**
+---
 
-Im verlauf des Projekts mussten wir feststellen, dass die Digitalen Pins am Arduino nicht ausreichen.
+### **Arduino Mega**
+
+Im Verlauf des Projekts mussten wir feststellen, dass die digitalen Pins am Arduino nicht ausreichen.
+
+**Jeweilige Pin Anzahl:**
+
+- Benötigt: `16 DI/DO`
+- Arduino Uno: `14 DI/DO`
+- Arduino Mega: `50 DI/DO`
+
 
 Deshalb haben wir auf einen Arduino Mega gewechselt.
-Dieser hat über 50 Digitale Pins.
-> Wir benötigen 16stk. 8 für die 2 Motoren und 8 für das Keypad
+
+> Wir benötigen `8 DI/DO` für die 2 Motoren und `8 DI/DO` für das Keypad
+
+<sub> **Von Joel** </sub>
