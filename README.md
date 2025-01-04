@@ -55,10 +55,10 @@ Hier wird erklärt wie man unseren Code auf einen Arduino laden kann.
 
 Im Voraus wird benötigt:
 
-- [ ] Eine IDE, welche `PlatformIO` unterstützt &rarr; zum Beispiel [Microsoft Visual Studio Code](https://code.visualstudio.com/download)
-- [ ] [`PlatformIO`](https://platformio.org/)
-- [ ] Einen C++ Compiler wie [GCC](https://code.visualstudio.com/docs/cpp/config-mingw)
-- [ ] [Arduino IDE](https://www.arduino.cc/en/software) &rarr; Wird benötigt für `PlatformIO`
+- [x] Eine IDE, welche `PlatformIO` unterstützt &rarr; zum Beispiel [Microsoft Visual Studio Code](https://code.visualstudio.com/download)
+- [x] [`PlatformIO`](https://platformio.org/)
+- [x] Einen C++ Compiler wie [GCC](https://code.visualstudio.com/docs/cpp/config-mingw)
+- [x] [Arduino IDE](https://www.arduino.cc/en/software) &rarr; Wird benötigt für `PlatformIO`
 
 > [!NOTE]
 > Mit **Microsoft Visual Studio Code** kann `PlatformIO` über `Extenstions` heruntergeladen und installiert werden &rarr; [Hier eine Anleitung](https://platformio.org/install/ide?install=vscode)
